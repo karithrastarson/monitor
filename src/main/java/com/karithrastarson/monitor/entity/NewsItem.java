@@ -13,10 +13,16 @@ public class NewsItem {
     private long id;
 
     private String headline;
-    private String timestamp;
+    private String url;
+    private long timestamp;
 
-    public NewsItem(String headline) {
+    public NewsItem() {
+    }
+
+    public NewsItem(String url, String headline) {
+        this.url = url;
         this.headline = headline;
+        this.timestamp = System.currentTimeMillis();
     }
 
     public String getHeadline() {
@@ -27,11 +33,19 @@ public class NewsItem {
         this.headline = headline;
     }
 
-    public String getTimestamp() {
+    public long getTimestamp() {
         return timestamp;
     }
 
-    public void setTimestamp(String timestamp) {
+    public void setTimestamp(long timestamp) {
         this.timestamp = timestamp;
+    }
+
+    public String getUrl() {
+        return url;
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
     }
 }

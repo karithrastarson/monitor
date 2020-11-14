@@ -1,5 +1,6 @@
 package com.karithrastarson.monitor;
 
+import com.karithrastarson.monitor.service.MonitoringService;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.ComponentScan;
