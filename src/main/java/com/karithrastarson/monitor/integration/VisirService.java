@@ -10,12 +10,12 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Logger;
 
-public class Visir {
-    private static final Logger LOGGER = Logger.getLogger(Visir.class.getName());
+public class VisirService {
+    private static final Logger LOGGER = Logger.getLogger(VisirService.class.getName());
 
     private final String sourceURL = "https://visir.is";
 
-    public Visir() {
+    public VisirService() {
     }
 
     public Map<String, String> getHeadlines() {

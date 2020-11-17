@@ -3,10 +3,10 @@ package com.karithrastarson.monitor.repository;
 import com.karithrastarson.monitor.entity.NewsItem;
 import org.springframework.data.repository.CrudRepository;
 
-import java.util.Optional;
+import java.util.List;
 
 public interface NewsItemRepository extends CrudRepository<NewsItem, Long> {
 
-    Optional<NewsItem> findByUrl(String url);
+    List<NewsItem> findByUrl(String url);
 
 }
