@@ -29,12 +29,22 @@ public class VisirService {
             for (Element headlineElement : headlineElements) {
                 String headline = headlineElement.text();
                 String id = headlineElement.attr("href").split("/")[2];
-                headlines.put(id, headline);
+                if (!id.contains("-") && !containsSpecialCharacter(headline)) {
+                    headlines.put(id, headline);
+                }
             }
         } catch (IOException e) {
             LOGGER.severe(e.getMessage());
         }
         return headlines;
+    }
+
+    private boolean containsSpecialCharacter(String headline) {
+        if (headline.contains("ż")) return true;
+        if (headline.contains("ń")) return true;
+        if (headline.contains("ą")) return true;
+
+        return false;
     }
 
     public String createUrl(String key) {

@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.logging.Logger;
 
 @Service
@@ -36,16 +37,25 @@ public class MonitoringService {
                     NewsItem newsItem = new NewsItem(url, entry.getValue());
                     newsItemRepository.save(newsItem);
                 } else {
-                    NewsItem oldEntry = results.get(results.size() - 1);
-                    if (!entry.getValue().equals(oldEntry.getHeadline())) {
-                        String tweet = "Headline change for url " + entry.getKey() + ". \n ";
-                        tweet = tweet.concat("Previous headline: " + oldEntry.getHeadline() + "\n");
-                        tweet = tweet.concat("New headline: " + entry.getValue());
-                        twitterService.doTweet(tweet);
+                    //Does one of the already registered have the same headline?
+                    Optional<NewsItem> match = results.stream()
+                            .filter(oldEntry -> entry.getValue().equals(oldEntry.getHeadline()))
+                            .findFirst();
 
-                        //Save updated item
-                        NewsItem newsItem = new NewsItem(url, entry.getValue());
-                        newsItemRepository.save(newsItem);
+                    if (match.isEmpty()) {
+                        //If no match, then
+                        results.forEach(oldEntry -> {
+                            if (!entry.getValue().equals(oldEntry.getHeadline())) {
+                                String tweet = "Headline change for url " + oldEntry.getUrl() + ". \n ";
+                                tweet = tweet.concat("Previous headline: " + oldEntry.getHeadline() + "\n");
+                                tweet = tweet.concat("New headline: " + entry.getValue());
+                                twitterService.doTweet(tweet);
+
+                                //Save updated item
+                                NewsItem newsItem = new NewsItem(url, entry.getValue());
+                                newsItemRepository.save(newsItem);
+                            }
+                        });
                     }
                 }
             }
