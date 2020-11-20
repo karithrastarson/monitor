@@ -23,13 +23,14 @@ public class VisirService {
         Map<String, String> headlines = new HashMap<>();
         try {
             doc = Jsoup.connect(sourceURL).get();
-
             Elements headlineElements = doc.select("article.article-item.article-item--simple:not(.-more) > h1 > a");
 
             for (Element headlineElement : headlineElements) {
                 String headline = headlineElement.text();
                 String id = headlineElement.attr("href").split("/")[2];
                 if (!id.contains("-") && !containsSpecialCharacter(headline)) {
+
+                    headline = cleanUnicode(headline);
                     headlines.put(id, headline);
                 }
             }
@@ -39,10 +40,17 @@ public class VisirService {
         return headlines;
     }
 
+    private String cleanUnicode(String headline) {
+        return headline.replaceAll("\u00AD", "");
+    }
+
     private boolean containsSpecialCharacter(String headline) {
         if (headline.contains("ż")) return true;
         if (headline.contains("ń")) return true;
         if (headline.contains("ą")) return true;
+        if (headline.contains("ś")) return true;
+        if (headline.contains("ł")) return true;
+
 
         return false;
     }

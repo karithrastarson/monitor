@@ -7,6 +7,9 @@ import com.karithrastarson.monitor.repository.NewsItemRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -46,9 +49,13 @@ public class MonitoringService {
                         //If no match, then
                         results.forEach(oldEntry -> {
                             if (!entry.getValue().equals(oldEntry.getHeadline())) {
-                                String tweet = "Headline change for url " + oldEntry.getUrl() + ". \n ";
-                                tweet = tweet.concat("Previous headline: " + oldEntry.getHeadline() + "\n");
-                                tweet = tweet.concat("New headline: " + entry.getValue());
+                                Date date = new Date();
+                                DateFormat sdf = new SimpleDateFormat("dd-M-yyyy hh:mm:ss");
+                                String stringDate = sdf.format(date);
+
+                                String tweet = stringDate + " - Fyrirsögn breyttist fyrir eftirfarandi frétt: " + oldEntry.getUrl() + " \n ";
+                                tweet = tweet.concat("Fyrirsögn áður: " + oldEntry.getHeadline() + "\n");
+                                tweet = tweet.concat("Fyrirsögn nú: " + entry.getValue());
                                 twitterService.doTweet(tweet);
 
                                 //Save updated item
