@@ -27,6 +27,7 @@ public class MonitoringService {
 
     public int refresh() {
         int count = 0;
+
         VisirService visirService = new VisirService();
         Map<String, String> headlines = visirService.getHeadlines();
         if (!headlines.isEmpty()) {
