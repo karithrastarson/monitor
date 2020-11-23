@@ -50,14 +50,14 @@ public class MonitoringService {
                         //If no match, then
                         results.forEach(oldEntry -> {
                             if (!entry.getValue().equals(oldEntry.getHeadline())) {
-                                Date date = new Date();
-                                DateFormat sdf = new SimpleDateFormat("dd-M-yyyy hh:mm:ss");
-                                String stringDate = sdf.format(date);
-
-                                String tweet = stringDate + " - Fyrirsögn breyttist fyrir eftirfarandi frétt: " + oldEntry.getUrl() + " \n ";
+                                String tweet = "Fyrirsögn breyttist fyrir eftirfarandi frétt: " + oldEntry.getUrl() + " \n ";
                                 tweet = tweet.concat("Fyrirsögn áður: " + oldEntry.getHeadline() + "\n");
                                 tweet = tweet.concat("Fyrirsögn nú: " + entry.getValue());
-                                twitterService.doTweet(tweet);
+
+                                //Add restrictions to tweets
+                                if (filterTweets(oldEntry.getHeadline())) {
+                                    twitterService.doTweet(tweet);
+                                }
 
                                 //Save updated item
                                 NewsItem newsItem = new NewsItem(url, entry.getValue());
@@ -69,5 +69,11 @@ public class MonitoringService {
             }
         }
         return count;
+    }
+
+    private boolean filterTweets(String oldHeadline) {
+        if (oldHeadline.contains("beinni"))
+            return false;
+        return true;
     }
 }
