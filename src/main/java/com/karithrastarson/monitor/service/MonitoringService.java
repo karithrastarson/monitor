@@ -50,9 +50,9 @@ public class MonitoringService {
                         //If no match, then
                         results.forEach(oldEntry -> {
                             if (!entry.getValue().equals(oldEntry.getHeadline())) {
-                                String tweet = "Fyrirsögn breyttist fyrir eftirfarandi frétt: " + oldEntry.getUrl() + " \n ";
-                                tweet = tweet.concat("Fyrirsögn áður: " + oldEntry.getHeadline() + "\n");
-                                tweet = tweet.concat("Fyrirsögn nú: " + entry.getValue());
+                                String tweet = "\u270F Fyrirsögn breyttist fyrir eftirfarandi frétt: " + oldEntry.getUrl() + " \n\n";
+                                tweet = tweet.concat("\u274C Fyrirsögn áður: " + oldEntry.getHeadline() + "\n\n");
+                                tweet = tweet.concat(	"\u2705 Fyrirsögn nú: " + entry.getValue());
 
                                 //Add restrictions to tweets
                                 if (filterTweets(oldEntry.getHeadline())) {
