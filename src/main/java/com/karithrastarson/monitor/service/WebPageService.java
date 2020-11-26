@@ -55,8 +55,7 @@ public abstract class WebPageService {
                         //If no match, then
                         for (NewsItem oldEntry : results) {
                             if (!entry.getValue().equals(oldEntry.getHeadline())) {
-                                twitterService.tweetHeadlineChange(oldEntry.getHeadline(), entry.getValue(), oldEntry.getUrl());
-
+                                tweetCount += twitterService.tweetHeadlineChange(oldEntry.getHeadline(), entry.getValue(), oldEntry.getUrl());
                                 //Save updated item
                                 NewsItem newsItem = new NewsItem(url, entry.getValue());
                                 newsItemRepository.save(newsItem);
