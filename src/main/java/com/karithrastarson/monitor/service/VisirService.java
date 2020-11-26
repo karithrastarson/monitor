@@ -1,16 +1,18 @@
-package com.karithrastarson.monitor.integration;
+package com.karithrastarson.monitor.service;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
+import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Logger;
 
-public class VisirService {
+@Component
+public class VisirService extends WebPageService {
     private static final Logger LOGGER = Logger.getLogger(VisirService.class.getName());
 
     private final String sourceURL = "https://visir.is";
@@ -18,6 +20,7 @@ public class VisirService {
     public VisirService() {
     }
 
+    @Override
     public Map<String, String> getHeadlines() {
         Document doc;
         Map<String, String> headlines = new HashMap<>();
@@ -40,21 +43,7 @@ public class VisirService {
         return headlines;
     }
 
-    private String cleanUnicode(String headline) {
-        return headline.replaceAll("\u00AD", "");
-    }
-
-    private boolean containsSpecialCharacter(String headline) {
-        if (headline.contains("ż")) return true;
-        if (headline.contains("ń")) return true;
-        if (headline.contains("ą")) return true;
-        if (headline.contains("ś")) return true;
-        if (headline.contains("ł")) return true;
-
-
-        return false;
-    }
-
+    @Override
     public String createUrl(String key) {
         return sourceURL + "/g/" + key;
     }

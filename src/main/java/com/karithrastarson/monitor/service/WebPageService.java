@@ -1,23 +1,14 @@
 package com.karithrastarson.monitor.service;
 
 import com.karithrastarson.monitor.entity.NewsItem;
-import com.karithrastarson.monitor.integration.TwitterService;
-import com.karithrastarson.monitor.integration.VisirService;
 import com.karithrastarson.monitor.repository.NewsItemRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.logging.Logger;
 
-@Service
-public class MonitoringService {
-    private static final Logger LOGGER = Logger.getLogger(MonitoringService.class.getName());
+public abstract class WebPageService {
 
     @Autowired
     NewsItemRepository newsItemRepository;
@@ -25,19 +16,33 @@ public class MonitoringService {
     @Autowired
     TwitterService twitterService;
 
-    public int refresh() {
-        int count = 0;
+    protected String cleanUnicode(String headline) {
+        return headline.replaceAll("\u00AD", "");
+    }
 
-        VisirService visirService = new VisirService();
-        Map<String, String> headlines = visirService.getHeadlines();
+    protected boolean containsSpecialCharacter(String headline) {
+        if (headline.contains("ż")) return true;
+        if (headline.contains("ń")) return true;
+        if (headline.contains("ą")) return true;
+        if (headline.contains("ś")) return true;
+        if (headline.contains("ł")) return true;
+
+
+        return false;
+    }
+
+    public int refresh() {
+        int tweetCount = 0;
+        Map<String, String> headlines = getHeadlines();
+
         if (!headlines.isEmpty()) {
             for (Map.Entry<String, String> entry : headlines.entrySet()) {
-                String url = visirService.createUrl(entry.getKey());
+                String url = createUrl(entry.getKey());
                 List<NewsItem> results = newsItemRepository.findByUrl(url);
 
                 //If empty, then create in database
                 if (results.isEmpty()) {
-                    count++;
+
                     NewsItem newsItem = new NewsItem(url, entry.getValue());
                     newsItemRepository.save(newsItem);
                 } else {
@@ -48,32 +53,23 @@ public class MonitoringService {
 
                     if (match.isEmpty()) {
                         //If no match, then
-                        results.forEach(oldEntry -> {
+                        for (NewsItem oldEntry : results) {
                             if (!entry.getValue().equals(oldEntry.getHeadline())) {
-                                String tweet = "\u270F Fyrirsögn breyttist fyrir eftirfarandi frétt: " + oldEntry.getUrl() + " \n\n";
-                                tweet = tweet.concat("\u274C Fyrirsögn áður: " + oldEntry.getHeadline() + "\n\n");
-                                tweet = tweet.concat(	"\u2705 Fyrirsögn nú: " + entry.getValue());
-
-                                //Add restrictions to tweets
-                                if (filterTweets(oldEntry.getHeadline())) {
-                                    twitterService.doTweet(tweet);
-                                }
+                                twitterService.tweetHeadlineChange(oldEntry.getHeadline(), entry.getValue(), oldEntry.getUrl());
 
                                 //Save updated item
                                 NewsItem newsItem = new NewsItem(url, entry.getValue());
                                 newsItemRepository.save(newsItem);
                             }
-                        });
+                        }
                     }
                 }
             }
         }
-        return count;
+        return tweetCount;
     }
 
-    private boolean filterTweets(String oldHeadline) {
-        if (oldHeadline.contains("beinni"))
-            return false;
-        return true;
-    }
+    public abstract Map<String, String> getHeadlines();
+
+    public abstract String createUrl(String key);
 }

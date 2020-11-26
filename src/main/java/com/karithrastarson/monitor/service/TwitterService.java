@@ -1,4 +1,4 @@
-package com.karithrastarson.monitor.integration;
+package com.karithrastarson.monitor.service;
 
 import org.springframework.stereotype.Component;
 import twitter4j.Twitter;
@@ -20,15 +20,32 @@ public class TwitterService {
     public TwitterService() {
     }
 
-    public boolean doTweet(String tweet) {
+    public int doTweet(String tweet) {
+        writeTweetToFile(tweet);
         Twitter twitter = new TwitterFactory().getInstance();
         try {
             twitter.updateStatus(tweet);
-
+            return 1;
         } catch (TwitterException e) {
-            writeTweetToFile(tweet);
             LOGGER.severe("Failed tweeting: \n" + tweet);
+            return 0;
         }
+    }
+
+    public int tweetHeadlineChange(String oldHeadline, String newHeadline, String url) {
+        String tweet = "\u270F Fyrirsögn breyttist fyrir eftirfarandi frétt: " + url + " \n\n";
+        tweet = tweet.concat("\u274C Fyrirsögn áður: " + oldHeadline + "\n\n");
+        tweet = tweet.concat("\u2705 Fyrirsögn nú: " + newHeadline);
+
+        if (filterTweets(oldHeadline)) {
+            return doTweet(tweet);
+        }
+        return 0;
+    }
+
+    private boolean filterTweets(String oldHeadline) {
+        if (oldHeadline.contains("beinni"))
+            return false;
         return true;
     }
 
