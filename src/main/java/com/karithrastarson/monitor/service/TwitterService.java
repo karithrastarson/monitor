@@ -21,7 +21,7 @@ public class TwitterService {
     }
 
     public int doTweet(String tweet) {
-        writeTweetToFile(tweet);
+        writeTweetToFile(System.currentTimeMillis() + ":\n" + tweet);
         Twitter twitter = new TwitterFactory().getInstance();
         try {
             twitter.updateStatus(tweet);
